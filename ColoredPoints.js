@@ -1,12 +1,9 @@
-var xArray = new Array(600)
-function main(){
+var xArray = new Array(600) //Declared as a global variable
+function main(){ //initializes the array as a 2d array
     var i;
     for (i = 0; i < 600; i++){
-	xArray[i] = new Array(400);
+	xArray[i] = new Array(400); //corresponding array of y values
     };
-}
-function testfun(){
-    document.write("Hello JavaScript"); 
 }
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
@@ -18,8 +15,7 @@ function getCursorPosition(canvas, event) {
     }else if(event.button == 2){
 	redCircle(x,y);
     }
-    console.log("Stored");
-    xArray[x][y] = event.button;
+    xArray[x][y] = event.button; //stores the most recent mouse button input at that position
 }
 const canvas = document.querySelector('canvas')
 canvas.addEventListener('mousedown', function(e) {
