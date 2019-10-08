@@ -1,0 +1,23 @@
+var xArray = new Array(600) //Declared as a global variable
+function main(){ //initializes the array as a 2d array
+    var i;
+    for (i = 0; i < 600; i++){
+	xArray[i] = new Array(400); //corresponding array of y values
+    };
+}
+function getCursorPosition(canvas, event) {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    console.log("X - " + x + ", Y - " + y)
+    if (event.button == 0){
+	blueTree(x,y);
+    }else if(event.button == 2){
+	redTree(x,y);
+    }
+    xArray[x][y] = event.button; //stores the most recent mouse button input at that position
+}
+const canvas = document.querySelector('canvas')
+canvas.addEventListener('mousedown', function(e) {
+    getCursorPosition(canvas, e)
+})
