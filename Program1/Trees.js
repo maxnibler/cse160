@@ -34,7 +34,7 @@ function storeBranch(x1, y1, z1, x2, y2, z2){
     var canvas = document.getElementById('canvas');
     var gl = canvas.getContext('experimental-webgl');
     var vertexBuff = gl.createBuffer();
-    var treeProg = gl.createProgram;
+    var treeProg = gl.createProgram();
     gl.linkProgram(treeProg);
     var branchVertex = [x1,y1,z1,
 			x2,y2,z2];
