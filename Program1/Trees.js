@@ -24,25 +24,40 @@ canvas.addEventListener('mousedown', function(e) {
 function blueTree(coorX, coorY){
     var canvas = document.getElementById('canvas');
     var gl = canvas.getContext('experimental-webgl');
-    gl.clearColor(0.9,0.9,0.8,1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    //gl.clearColor(0.9,0.9,0.8,1);
+    //gl.clear(gl.COLOR_BUFFER_BIT);
+    storeBranch(coorX, 0, coorY, coorX, 40, coorY);
+    findBranch(coorX, 40, coorY, 40, 0, 0, 0);
     
 }
-function branch(x, y, z, length, angA, angB){
-    
+function storeBranch(x1, y1, z1, x2, y2, z2){
+    var canvas = document.getElementById('canvas');
+    var gl = canvas.getContext('experimental-webgl');
+    var vertexBuff = gl.createBuffer();
+    var treeProg = gl.createProgram;
+    gl.linkProgram(treeProg);
+    var branchVertex = [x1,y1,z1,
+			x2,y2,z2];
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuff);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(branchVertex), gl.STATIC_DRAW);
+    gl.drawArrays(gl.LINES,0,6);
 }
 function findBranch(x, y, z, length, depth, angA, angB){
-    var newLength = length / 2;
-    
-    
+    //console.log("Finding: " + angA+" "+angB);
+    var newCoor = findCoord(x, y, z, length, angA+0, angB+45);
+    console.log("Coord: " + newCoor);
+    var newCoor = findCoord(x, y, z, length, angA+120, angB+45);
+    console.log("Coord: " + newCoor);
+    var newCoor = findCoord(x, y, z, length, angA+240, angB+45);
+    console.log("Coord: " + newCoor);    
 }
 function findCoord(x, y, z, length, angA, angB){
     var retCoor = new Array(3);
     var xSlope  = Math.cos(angA) * Math.cos(angB);
     var zSlope  = Math.sin(angA) * Math.cos(angB);
     var ySlope  = Math.sin(angB);
-    retCoor[0]  = length * xSlope - x;
-    retCoor[1]  = length * ySlope - y;
-    retCoor[2]  = length * zSlope - z;
+    retCoor[0]  = length * xSlope + x;
+    retCoor[1]  = length * ySlope + y;
+    retCoor[2]  = length * zSlope + z;
     return retCoor;
 }
