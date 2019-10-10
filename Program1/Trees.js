@@ -1,22 +1,40 @@
 var xArray = new Array(600) //Declared as a global variable
+var branchVerts = new Array
 function main(){ //initializes the array as a 2d array
     var i;
     for (i = 0; i < 600; i++){
 	xArray[i] = new Array(400); //corresponding array of y values
     };
+    // WebView();
+    var tree = blueTree(1,1);
+    console.log(tree);
+    renderView(tree);
     
+}
+function WebView(){
+      // Setup the canvas and WebGL context
+    this.canvas = document.getElementById('canvas');
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+    this.gl = canvas.getContext('experimental-webgl');
+  
+    var gl = this.gl; 
+
+  // Setup a WebGL program, anything part of the MDN object is defined outside of this article
+    this.webglProgram = MDN.createWebGLProgramFromIds(gl, 'vertex-shader', 'fragment-shader');
+    gl.useProgram(this.webglProgram);
+  
+  // Save the attribute and uniform locations
+    this.positionLocation = gl.getAttribLocation(this.webglProgram, 'position');
+    this.colorLocation = gl.getUniformLocation(this.webglProgram, 'color');
+  
+  // Tell WebGL to test the depth when drawing, so if a square is behind
+  // another square it won't be drawn
+    gl.enable(gl.DEPTH_TEST);
+}
+function renderView(Vertices){
     var canvas = document.getElementById('canvas');
     var gl = canvas.getContext('experimental-webgl');
-    var vertices = [
-            -0.7,-0.1,0,
-            -0.3,0.6,0,
-            -0.3,-0.3,0,
-            0.2,0.6,0,
-            0.3,-0.3,0,
-            0.7,0.6,0 
-         ]
-    vertices[7] = [0.5, 0.6, 0,
-		   -0.4, -0.5, 0]
          // Create an empty buffer object
          var vertex_buffer = gl.createBuffer();
 
@@ -24,7 +42,7 @@ function main(){ //initializes the array as a 2d array
          gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
       
          // Pass the vertex data to the buffer
-         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Vertices), gl.STATIC_DRAW);
 
          // Unbind the buffer
          gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -87,7 +105,7 @@ function main(){ //initializes the array as a 2d array
          var coord = gl.getAttribLocation(shaderProgram, "coordinates");
 
          // Point an attribute to the currently bound VBO
-         gl.vertexAttribPointer(coord, 8, gl.FLOAT, false, 0, 0);
+         gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 0, 0);
 
          // Enable the attribute
          gl.enableVertexAttribArray(coord);
@@ -107,53 +125,63 @@ function main(){ //initializes the array as a 2d array
          gl.viewport(0,0,canvas.width,canvas.height);
 
          // Draw the triangle
-         gl.drawArrays(gl.LINES, 0, 8);
+         gl.drawArrays(gl.LINES, 0, Vertices.length/3);
 }
-function getCursorPosition(canvas, event) {
+/*function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
     console.log("X - " + x + ", Y - " + y)
     if (event.button == 0){
 	blueTree(x,y);
+	xArray[x][y] = branchVerts;
+	branchVerts = new Array;
+	renderView();
+	console.log(xArray);
     }else if(event.button == 2){
 	blueTree(x,y);
-    }
-    xArray[x][y] = event.button; //stores the most recent mouse button input at that position
+	branchVerts = new Array;
+	//console.log(xArray[x][y]);
+    } //stores the most recent mouse button input at that position
 }
 const canvas = document.querySelector('canvas')
 canvas.addEventListener('mousedown', function(e) {
     getCursorPosition(canvas, e)
-})
+})*/
 function blueTree(coorX, coorY){
-    var tree = [coorX, coorY, 0,
+    var tree = new Array;
+    tree = [coorX, coorY, 0,
 		coorX, coorY, 40,]
-    tree[6] = buildTree(coorX, 40, coorY, 20, 4, 0, 0);
-    console.log(tree);
-    
+    branchVerts[0] = tree;
+    buildTree(tree, coorX, coorY, 40, 20, 4, 0, 90);
+    //console.log(branchVerts);
+    return tree;
 }
 function storeBranch(x1, y1, z1, x2, y2, z2){
 }
-function buildTree(x, y, z, length, depth, angA, angB){
+function buildTree(tree, x, y, z, length, depth, angA, angB){
     if (depth <= 0){
 	return null;
     }
-    var branches = new Array(6);
-    var newCoor = findCoord(x, y, z, length, angA+0, angB+45);
+    //var branches = new Array(6);
+    tree = findCoord(tree, x, y, z, length, angA+0, angB+45);
     //console.log("Coord: " + newCoor);
-    branches[0] = newCoor;
-    branches[1] = buildTree(newCoor[3],newCoor[4],newCoor[5],length/2,depth-1,angA+0,angB+45);
-    var newCoor = findCoord(x, y, z, length, angA+120, angB+45);
+    //branches[0] = newCoor;
+    buildTree(tree, tree[tree.length-3],tree[tree.length-2],
+	      tree[tree.length-1],length/2,depth-1,angA+0,angB+45);
+    tree = findCoord(tree, x, y, z, length, angA+120, angB+45);
     //console.log("Coord: " + newCoor);
-    branches[2] = newCoor;
-    branches[3] = buildTree(newCoor[3],newCoor[4],newCoor[5],length/2,depth-1,angA+120,angB+45);
-    var newCoor = findCoord(x, y, z, length, angA+240, angB+45);
+    //branches[2] = newCoor;
+    buildTree(tree, tree[tree.length-3],tree[tree.length-2],
+	      tree[tree.length-1],length/2,depth-1,angA+120,angB+45);
+    tree = findCoord(tree, x, y, z, length, angA+240, angB+45);
     //console.log("Coord: " + newCoor);
-    branches[4] = newCoor;
-    branches[5] = buildTree(newCoor[3],newCoor[4],newCoor[5],length/2,depth-1,angA+240,angB+45);
-    return branches;
+    //branches[4] = newCoor;
+    buildTree(tree, tree[tree.length-3],tree[tree.length-2],
+	      tree[tree.length-1],length/2,depth-1,angA+240,angB+45);
+    return tree;
 }
-function findCoord(x, y, z, length, angA, angB){
+function findCoord(tree, x, y, z, length, angA, angB){
     var retCoor = new Array(6);
     var xSlope  = Math.cos(angA) * Math.cos(angB);
     var zSlope  = Math.sin(angA) * Math.cos(angB);
@@ -164,5 +192,9 @@ function findCoord(x, y, z, length, angA, angB){
     retCoor[3]  = length * xSlope + x;
     retCoor[4]  = length * ySlope + y;
     retCoor[5]  = length * zSlope + z;
-    return retCoor;
+    for (var i = 0; i < 6; i++){
+	tree[tree.length] = retCoor[i];
+    };
+    //branchVerts[branchVerts.length] = retCoor;
+    return tree;
 }
