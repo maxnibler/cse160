@@ -33,9 +33,37 @@ function WebView(){
   // another square it won't be drawn
     gl.enable(gl.DEPTH_TEST);
 }
+function initVertexBuffers(gl) {
+    var verticesColors = new Float32Array([
+
+	0.0, 0.5, -0.4, 0.4, 1.0, 0.4, // The back green triangle
+	-0.5, -0.5, -0.4, 0.4, 1.0, 0.4,
+	0.5, -0.5, -0.4, 1.0, 0.4, 0.4,
+	0.5, 0.4, -0.2, 1.0, 0.4, 0.4, // The middle yellow triangle
+	-0.5, 0.4, -0.2, 1.0, 1.0, 0.4,
+	0.0, -0.6, -0.2, 1.0, 1.0, 0.4,
+	0.0, 0.5, 0.0, 0.4, 0.4, 1.0, // The front blue triangle
+	-0.5, -0.5, 0.0, 0.4, 0.4, 1.0,
+	0.5, -0.5, 0.0, 1.0, 0.4, 0.4
+    ]);
+    var n = 9;
+    // Create a buffer object
+    var vertexColorbuffer = gl.createBuffer();
+    ...
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorbuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
+    ...
+    return n;
+}
+
 function renderView(vertices){
     var canvas = document.getElementById('canvas');
     var gl = canvas.getContext('webgl');
+
+    var n = initVertexBuffers(gl);
+    var u_ViewMatrix = gl.getUniformLocation(gl.program,'u_ViewMatrix');
+    var viewMatrix = new Matrix4();
+    viewMatrix.setLookAt(0.20, 0.25, 0.25, 0, 0, 0, 0, 1, 0);
     canvas = resize(gl.canvas);
     //vertices = [.1,.1,0,11,5,40,.1,.1,0,3,.5,0]
          // Create an empty buffer object
